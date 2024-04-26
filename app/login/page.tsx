@@ -20,11 +20,12 @@ export default function LoginPage() {
             aria-live="polite"
             aria-atomic="true"
           >
+           
+            <div className="flex cursor-pointer items-center justify-around space-x-2">
             <form action={async ()=>{
               "use server"
               await signIn("github")
             }}>
-            <div className="flex cursor-pointer items-center justify-around space-x-2">
               <button className="flex flex-col items-center justify-center space-x-2">
                 <svg
                   viewBox="0 0 24 24"
@@ -39,7 +40,14 @@ export default function LoginPage() {
                 </svg>
                 <p className="mt-1 text-sm text-gray-500">GitHub</p>
               </button>
-              <div className="flex flex-col items-center justify-center space-x-2">
+              </form>
+
+              <form action={async ()=>{
+              "use server"
+              
+              await signIn("google")
+            }}>
+              <button className="flex flex-col items-center justify-center space-x-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   x="0px"
@@ -65,15 +73,19 @@ export default function LoginPage() {
                   ></path>
                 </svg>
                 <p className="mt-1 text-sm text-gray-500">Google</p>
-              </div>
+              </button>
+              </form>
             </div>
-            </form>
+           
+           
+            
             <div className="mt-4 text-center text-sm text-gray-500">
               Don&#39;t have an account?{' '}
               <Link href="/register" className="text-blue-500 hover:underline">
                 Register
               </Link>
             </div>
+            
           </div>
           </div>
     </main>
