@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { sql } from '@vercel/postgres';
 import type { User } from '@/app/lib/definitions';
 import bcrypt from 'bcrypt';
-import Github from 'next-auth/providers/github';
+import GitHubProvider from "next-auth/providers/github";
 async function getUser(email: string): Promise<User | undefined> {
   try {
     const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
@@ -34,6 +34,9 @@ export const { auth, signIn, signOut,handlers } = NextAuth({
         return null;
       },
     }),
-    Github
+    GitHubProvider({
+      clientId: process.env.AUTH_GITHUB_ID,
+      clientSecret: process.env.AUTH_GITHUB_SECRET
+    })
   ],
 });
