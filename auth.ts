@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { sql } from '@vercel/postgres';
 import type { User } from '@/app/lib/definitions';
 import bcrypt from 'bcrypt';
+import Github from 'next-auth/providers/github';
 async function getUser(email: string): Promise<User | undefined> {
   try {
     const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
@@ -14,7 +15,7 @@ async function getUser(email: string): Promise<User | undefined> {
     throw new Error('Failed to fetch user.');
   }
 }
-export const { auth, signIn, signOut } = NextAuth({
+export const { auth, signIn, signOut,handlers } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
@@ -33,5 +34,6 @@ export const { auth, signIn, signOut } = NextAuth({
         return null;
       },
     }),
+    Github
   ],
 });
