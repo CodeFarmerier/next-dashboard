@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import bcrypt from 'bcrypt';
 const FormSchema = z.object({
   id: z.string(),
   customerId: z.string({
@@ -98,6 +99,37 @@ export async function authenticate(
 ) {
   try {
     await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error;
+  }
+}
+export async function register(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    const { name, email, password } = Object.fromEntries<any>(formData);
+    const { rows } = await sql`
+      SELECT EXISTS(SELECT * FROM users WHERE email = ${email})
+    `;
+    if (rows.length > 0 && rows[0].exists) {
+      // 查询条件为真
+      throw new Error('Email already exists');
+    } else {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await sql`
+      INSERT INTO users (name, email, password)
+      VALUES (${name}, ${email}, ${hashedPassword})
+    `;
+    }
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
